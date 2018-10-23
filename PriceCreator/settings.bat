@@ -1,0 +1,1 @@
+java -jar dist\PriceCreator.jar settings
