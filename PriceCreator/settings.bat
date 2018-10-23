@@ -1,1 +1,1 @@
-java -jar dist\PriceCreator.jar settings
+start javaw -jar dist\PriceCreator.jar settings
