@@ -171,8 +171,7 @@ public class Scheduler {
                     zout.closeEntry();
                 }catch(Exception ex){            
                     System.out.println(ex.getMessage());
-                } 
-            //Отправка архива по ftp
+                }            
             FTPClient ftp = null;
             ftp = new FTPClient();
             ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
