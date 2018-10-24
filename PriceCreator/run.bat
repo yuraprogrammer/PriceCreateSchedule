@@ -1,1 +1,1 @@
-start %~dp0"start.bat"
+"%CD%\start.bat"
