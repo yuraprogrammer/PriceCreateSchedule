@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><configuration>
     <Servers>
-        <Server name="ConfigServer" driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" URL="jdbc:sqlserver://176.105.202.29" Port="1433" Source="Alexprom_ASUTP" User="roman" Password="roman" />
+        <Server Password="roman" Port="1433" Source="OilConfig" URL="jdbc:sqlserver://176.105.202.29" User="roman" driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" name="ConfigServer"/>
     </Servers>
-	<FTP name="ftpServer" Path="ftp.tabletki.ua" User="roman" Password="roman" />
-    <SerialNum name="12345" />
+	<FTP Password="roman" Path="ftp.asutm.com" User="roman" name="ftpServer"/>
+    <SerialNum name="12345"/>
 </configuration>

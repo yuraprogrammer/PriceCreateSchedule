@@ -85,7 +85,8 @@
     </Component>
     <Component class="javax.swing.JTextField" name="eSerialNumber">
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="eSerialNumberActionPerformed"/>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eSerialNumberFocusLost"/>
+        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="eSerialNumberKeyPressed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator1">
@@ -199,7 +200,8 @@
       <SubComponents>
         <Component class="javax.swing.JTextField" name="eDbName">
           <Events>
-            <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="eDbNamePropertyChange"/>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eDbNameFocusLost"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="eDbNameKeyPressed"/>
           </Events>
         </Component>
         <Component class="java.awt.Label" name="label3">
@@ -222,6 +224,10 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="ePortNum">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="ePortNumFocusLost"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="ePortNumKeyPressed"/>
+          </Events>
         </Component>
         <Component class="java.awt.Label" name="label1">
           <Properties>
@@ -232,6 +238,10 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="eLogin">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eLoginFocusLost"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="eLoginKeyPressed"/>
+          </Events>
         </Component>
         <Component class="java.awt.Label" name="label2">
           <Properties>
@@ -242,6 +252,10 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JPasswordField" name="ePassword">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="ePasswordFocusLost"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="ePasswordKeyPressed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnTest">
           <Properties>
@@ -332,6 +346,10 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="eFtpAddress">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eFtpAddressFocusLost"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="eFtpAddressKeyPressed"/>
+          </Events>
         </Component>
         <Component class="java.awt.Label" name="label7">
           <Properties>
@@ -342,6 +360,10 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="eFtpUserName">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eFtpUserNameFocusLost"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="eFtpUserNameKeyPressed"/>
+          </Events>
         </Component>
         <Component class="java.awt.Label" name="label8">
           <Properties>
@@ -352,6 +374,10 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JPasswordField" name="eFtpUserPassword">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eFtpUserPasswordFocusLost"/>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="eFtpUserPasswordKeyPressed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JCheckBox" name="showFtpPassword">
           <Properties>

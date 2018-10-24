@@ -19,6 +19,12 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -156,9 +162,14 @@ public class CreatorSettings extends javax.swing.JFrame {
         label5.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
         label5.setText("Серийный номер:");
 
-        eSerialNumber.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                eSerialNumberActionPerformed(evt);
+        eSerialNumber.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                eSerialNumberFocusLost(evt);
+            }
+        });
+        eSerialNumber.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                eSerialNumberKeyPressed(evt);
             }
         });
 
@@ -185,9 +196,14 @@ public class CreatorSettings extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Настройка связис БД:"));
 
-        eDbName.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                eDbNamePropertyChange(evt);
+        eDbName.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                eDbNameFocusLost(evt);
+            }
+        });
+        eDbName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                eDbNameKeyPressed(evt);
             }
         });
 
@@ -198,11 +214,44 @@ public class CreatorSettings extends javax.swing.JFrame {
         label4.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
         label4.setText("Порт:");
 
+        ePortNum.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                ePortNumFocusLost(evt);
+            }
+        });
+        ePortNum.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                ePortNumKeyPressed(evt);
+            }
+        });
+
         label1.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
         label1.setText("Имя пользователя:");
 
+        eLogin.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                eLoginFocusLost(evt);
+            }
+        });
+        eLogin.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                eLoginKeyPressed(evt);
+            }
+        });
+
         label2.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
         label2.setText("Пароль:");
+
+        ePassword.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                ePasswordFocusLost(evt);
+            }
+        });
+        ePassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                ePasswordKeyPressed(evt);
+            }
+        });
 
         btnTest.setText("Тест соединения");
         btnTest.addActionListener(new java.awt.event.ActionListener() {
@@ -278,11 +327,44 @@ public class CreatorSettings extends javax.swing.JFrame {
         label6.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
         label6.setText("Путь к ftp-серверу:");
 
+        eFtpAddress.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                eFtpAddressFocusLost(evt);
+            }
+        });
+        eFtpAddress.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                eFtpAddressKeyPressed(evt);
+            }
+        });
+
         label7.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
         label7.setText("Имя пользователя:");
 
+        eFtpUserName.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                eFtpUserNameFocusLost(evt);
+            }
+        });
+        eFtpUserName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                eFtpUserNameKeyPressed(evt);
+            }
+        });
+
         label8.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
         label8.setText("Пароль:");
+
+        eFtpUserPassword.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                eFtpUserPasswordFocusLost(evt);
+            }
+        });
+        eFtpUserPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                eFtpUserPasswordKeyPressed(evt);
+            }
+        });
 
         showFtpPassword.setText("Показать");
         showFtpPassword.addActionListener(new java.awt.event.ActionListener() {
@@ -388,20 +470,14 @@ public class CreatorSettings extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_btnCancelActionPerformed
 
-    private void eDbNamePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_eDbNamePropertyChange
-        
-    }//GEN-LAST:event_eDbNamePropertyChange
-
     private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
         dbConn = new JDbConnection(this.getDriver(), this.getDatabaseName()+":"+this.getServerPort(), "localhost", this.getDatabaseUserName(), this.getDatabaseUserPassword());
     }//GEN-LAST:event_btnTestActionPerformed
 
-    private void eSerialNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eSerialNumberActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_eSerialNumberActionPerformed
-
     private void btnAcceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcceptActionPerformed
         save();
+        edited = false;
+        btnAccept.setEnabled(false);
     }//GEN-LAST:event_btnAcceptActionPerformed
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
@@ -425,44 +501,207 @@ public class CreatorSettings extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_showFtpPasswordActionPerformed
 
+    private void eSerialNumberFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eSerialNumberFocusLost
+        edited=true;
+        this.setSerialNumber(edited);        
+    }//GEN-LAST:event_eSerialNumberFocusLost
+
+    private void eSerialNumberKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_eSerialNumberKeyPressed
+        if (evt.getKeyCode()==java.awt.event.KeyEvent.VK_ENTER){
+            edited=true;
+            this.setSerialNumber(edited);
+        }
+    }//GEN-LAST:event_eSerialNumberKeyPressed
+
+    private void eDbNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_eDbNameKeyPressed
+        if (evt.getKeyCode()==java.awt.event.KeyEvent.VK_ENTER){
+            edited=true;
+            this.setDbName(edited);
+            eDbName.transferFocus();
+        }
+    }//GEN-LAST:event_eDbNameKeyPressed
+
+    private void eDbNameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eDbNameFocusLost
+        edited=true;
+        this.setDbName(edited);
+    }//GEN-LAST:event_eDbNameFocusLost
+
+    private void ePortNumKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ePortNumKeyPressed
+        if (evt.getKeyCode()==java.awt.event.KeyEvent.VK_ENTER){
+            edited=true;
+            this.setPortNumber(edited);
+            ePortNum.transferFocus();
+        }
+    }//GEN-LAST:event_ePortNumKeyPressed
+
+    private void ePortNumFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ePortNumFocusLost
+        edited=true;
+        this.setPortNumber(edited);
+    }//GEN-LAST:event_ePortNumFocusLost
+
+    private void eLoginKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_eLoginKeyPressed
+        if (evt.getKeyCode()==java.awt.event.KeyEvent.VK_ENTER){
+            edited=true;
+            this.setDbUserName(edited);
+            eLogin.transferFocus();
+        }
+    }//GEN-LAST:event_eLoginKeyPressed
+
+    private void eLoginFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eLoginFocusLost
+        edited=true;
+        this.setDbUserName(edited);
+    }//GEN-LAST:event_eLoginFocusLost
+
+    private void ePasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ePasswordKeyPressed
+        if (evt.getKeyCode()==java.awt.event.KeyEvent.VK_ENTER){
+            edited=true;
+            this.setDbPassword(edited);
+            ePassword.transferFocus();
+        }
+    }//GEN-LAST:event_ePasswordKeyPressed
+
+    private void ePasswordFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ePasswordFocusLost
+        edited=true;
+        this.setDbPassword(edited);
+    }//GEN-LAST:event_ePasswordFocusLost
+
+    private void eFtpAddressKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_eFtpAddressKeyPressed
+        if (evt.getKeyCode()==java.awt.event.KeyEvent.VK_ENTER){
+            edited=true;
+            this.setFtpPath(edited);
+            eFtpAddress.transferFocus();
+        }
+    }//GEN-LAST:event_eFtpAddressKeyPressed
+
+    private void eFtpAddressFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eFtpAddressFocusLost
+        edited=true;
+        this.setFtpPath(edited);
+    }//GEN-LAST:event_eFtpAddressFocusLost
+
+    private void eFtpUserNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_eFtpUserNameKeyPressed
+        if (evt.getKeyCode()==java.awt.event.KeyEvent.VK_ENTER){
+            edited=true;
+            this.setFtpUserName(edited);
+            eFtpUserName.transferFocus();
+        }
+    }//GEN-LAST:event_eFtpUserNameKeyPressed
+
+    private void eFtpUserNameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eFtpUserNameFocusLost
+        edited=true;
+        this.setFtpUserName(edited);
+    }//GEN-LAST:event_eFtpUserNameFocusLost
+
+    private void eFtpUserPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_eFtpUserPasswordKeyPressed
+        if (evt.getKeyCode()==java.awt.event.KeyEvent.VK_ENTER){
+            edited=true;
+            this.setFtpPassword(edited);
+            eFtpUserPassword.transferFocus();
+        }
+    }//GEN-LAST:event_eFtpUserPasswordKeyPressed
+
+    private void eFtpUserPasswordFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eFtpUserPasswordFocusLost
+        edited=true;
+        this.setFtpPassword(edited);
+    }//GEN-LAST:event_eFtpUserPasswordFocusLost
+
     private void save(){
-        
-    }
-    
-    private void setAcceptEnabled(boolean en){
-        btnAccept.setEnabled(en);
-    }
+        try {
+            NodeList serverList = doc.getElementsByTagName("Server");
+            Node serverNode = serverList.item(0);
+            NamedNodeMap serverMap = serverNode.getAttributes();
+            Node serverDriver = serverMap.getNamedItem("driver");
+            serverDriver.setTextContent(this.getDriver());
+            Node dbName = serverMap.getNamedItem("Source");
+            dbName.setTextContent(this.getDatabaseName());
+            Node dbPort = serverMap.getNamedItem("Port");
+            dbPort.setTextContent(this.getServerPort());
+            Node dbUserName = serverMap.getNamedItem("User");
+            dbUserName.setTextContent(this.getDatabaseUserName());
+            Node dbUserPassword = serverMap.getNamedItem("Password");
+            dbUserPassword.setTextContent(this.getDatabaseUserPassword());
+            
+            NodeList ftpList = doc.getElementsByTagName("FTP");
+            Node ftpNode = ftpList.item(0);
+            NamedNodeMap ftpMap = ftpNode.getAttributes();
+            Node ftpServer = ftpMap.getNamedItem("Path");
+            ftpServer.setTextContent(this.getFtpPath());
+            Node ftpServerUser = ftpMap.getNamedItem("User");
+            ftpServerUser.setTextContent(this.getFtpUser());
+            Node ftpPassword = ftpMap.getNamedItem("Password");
+            ftpPassword.setTextContent(this.getFtpUserPassword());
+            
+            NodeList serialList = doc.getElementsByTagName("SerialNum");
+            Node serialNode = serialList.item(0);
+            NamedNodeMap serialMap = serialNode.getAttributes();
+            Node serialItem = serialMap.getNamedItem("name");
+            serialItem.setTextContent(this.getSerial());
+            
+            Transformer transformer = TransformerFactory.newInstance()
+                    .newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(System.getProperty("user.dir")+File.separator+"settings.xml"));
+            transformer.transform(source, result);
+        } catch (TransformerConfigurationException ex) {
+            Logger.getLogger(CreatorSettings.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (TransformerException ex) {
+            Logger.getLogger(CreatorSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }        
     
     private void setDbName(boolean edited){
-        
+        if (edited){
+            setDatabaseName(eDbName.getText());
+            btnAccept.setEnabled(true);
+        }
     }
     
     private void setPortNumber(boolean edited){
-        
+        if (edited){
+            this.setServerPort(ePortNum.getText());
+            btnAccept.setEnabled(true);
+        }
     }
     
     private void setDbUserName(boolean edited){
-        
+        if (edited){
+            this.setDatabaseUserName(eLogin.getText());
+            btnAccept.setEnabled(true);
+        }
     }
     
     private void setDbPassword(boolean edited){
-        
+        if (edited){
+            this.setDatabaseUserPassword(String.valueOf(ePassword.getPassword()));
+            btnAccept.setEnabled(true);
+        }
     }
     
     private void setFtpPath(boolean edited){
-        
+        if(edited){
+            this.setFtpPath(eFtpAddress.getText());
+            btnAccept.setEnabled(true);
+        }
     }
     
     private void setFtpUserName(boolean edited){
-                
+        if(edited){
+            this.setFtpUser(eFtpUserName.getText());
+            btnAccept.setEnabled(true);
+        }
     }
     
     private void setFtpPassword(boolean edited){
-        
+        if (edited){
+            this.setFtpUserPassword(String.valueOf(eFtpUserPassword.getPassword()));
+            btnAccept.setEnabled(true);
+        }
     }
     
     private void setSerialNumber(boolean edited){
-        
+        if (edited){
+            this.setSerial(eSerialNumber.getText());
+            btnAccept.setEnabled(true);            
+        }
     }
 
     public String getDriver() {
