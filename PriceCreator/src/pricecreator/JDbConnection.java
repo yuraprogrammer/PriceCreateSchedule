@@ -14,6 +14,7 @@ public final class JDbConnection {
     private String user;
     
     private String driver;
+    private boolean Connected=false;
     
     public JDbConnection(String driver, String dbName, String serverName, String userName, String password){
         
@@ -29,6 +30,7 @@ public final class JDbConnection {
         try {
             db = getConnection(this.driver, url, user, password);
             System.out.println(url + " connection successfull!!!");
+            setConnected(true);
         } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             System.out.println(ex.getLocalizedMessage());
         }
@@ -40,4 +42,14 @@ public final class JDbConnection {
         Connection conn = DriverManager.getConnection(url, user, password);
         return conn;        
     }
+
+    public boolean isConnected() {
+        return Connected;
+    }
+
+    public void setConnected(boolean Connected) {
+        this.Connected = Connected;
+    }
+    
+    
 }

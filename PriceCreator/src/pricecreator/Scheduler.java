@@ -58,11 +58,21 @@ public class Scheduler {
     String userName="";
     String userPassword="";
     String serial="";
+    String port="";
+    String urlPrefix="";
+    String ftpAddress="";
+    String ftpUser="";
+    String ftpPassword="";
     
     public Scheduler(){
         openSettings();
         doConnect();
-        doTask();
+        if (dbConn.isConnected()){
+            System.out.println("Database connected successfull");
+            doTask();
+        }else{
+            System.out.println("Database not connected. System will be terminated.");            
+        }        
     }
     
     private void openSettings(){
@@ -84,11 +94,22 @@ public class Scheduler {
             URL = servers.get(0).getURL();
             userName = servers.get(0).getUsername();
             userPassword = servers.get(0).getPassword();
+            port=servers.get(0).getPort();
+            urlPrefix = servers.get(0).getUrlPrefix();
             NodeList serialList = doc.getElementsByTagName("SerialNum");
             Node serialNode = serialList.item(0);
             NamedNodeMap map = serialNode.getAttributes();
             Node serialItem = map.getNamedItem("name");
             serial = serialItem.getNodeValue();
+            NodeList ftpList = doc.getElementsByTagName("FTP");
+            Node ftpNode = ftpList.item(0);
+            NamedNodeMap ftpMap = ftpNode.getAttributes();
+            Node ftpPathItem = ftpMap.getNamedItem("Path");
+            Node ftpUserItem = ftpMap.getNamedItem("User");
+            Node ftpPasswordItem = ftpMap.getNamedItem("Password");
+            ftpAddress = ftpPathItem.getNodeValue();
+            ftpUser = ftpUserItem.getNodeValue();
+            ftpPassword = ftpPasswordItem.getNodeValue();
             System.out.println("Settings opened and accepted!!!");
         } catch (SAXException | IOException ex) {
             Logger.getLogger(CreatorSettings.class.getName()).log(Level.SEVERE, null, ex);
@@ -98,10 +119,8 @@ public class Scheduler {
     }
     
     private void doConnect(){
-        dbConn = new JDbConnection(driver, source, URL, userName, userPassword);
-        if (!dbConn.equals(null)){
-            System.out.println("Database connected successfull");
-        }    
+        
+        dbConn = new JDbConnection(driver, source, urlPrefix+URL+":"+port, userName, userPassword);
     }
     
     private void doTask(){
@@ -138,15 +157,16 @@ public class Scheduler {
             for (int i=1; i<rsmd.getColumnCount(); i++){
                 header.add(rsmd.getColumnName(i));
             }
-            Date date = new Date();
+            Date date = new Date();            
             DateFormat df = new SimpleDateFormat("yyyyMMddhhmmss");
+            
             String Rest_DIR = System.getProperty("user.dir")+File.separator+"Rest";
             String SAMPLE_CSV_FILE = "Rest_"+serial+"_"+df.format(date);
             BufferedWriter writer;
             try {
                 writer = Files.newBufferedWriter(Paths.get(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".csv"));
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                .withHeader(rsmd)
+                .withHeader(rsmd/*header.toString()*/)
                 //.withHeader("Code","Name","Producer","Tax","Price","PriceReserve","PriceReserveOrder","Quantity","Code1","Code2","Code3","Code4","Code6","Code7","Code8","Code9","Code10","Code11");
                 );
                 while (rs.next()){
@@ -176,36 +196,29 @@ public class Scheduler {
             ftp = new FTPClient();
             ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
             int reply;
-            ftp.connect("ftp.tabletki.ua");
+            ftp.connect(ftpAddress);
             reply = ftp.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
 		ftp.disconnect();			
             }
-            ftp.login("", "");
-            ftp.setFileType(FTP.BINARY_FILE_TYPE);
-            ftp.enterLocalPassiveMode();
-            InputStream input = new FileInputStream(new File(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".zip"));
-            ftp.storeFile("" + SAMPLE_CSV_FILE+".zip", input);	
-            if (ftp.isConnected()) {		
-                ftp.logout();
-                ftp.disconnect();		
+            if (ftp.login(ftpUser, ftpPassword)){
+                ftp.setFileType(FTP.BINARY_FILE_TYPE);
+                ftp.enterLocalPassiveMode();
+                InputStream input = new FileInputStream(new File(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".zip"));
+                ftp.storeFile("" + SAMPLE_CSV_FILE+".zip", input);	
+                if (ftp.isConnected()) {		
+                    ftp.logout();
+                    ftp.disconnect();		
+                }
+            }else{
+                System.out.println("FTP-server has not logged in. File has not transfered.");
             }
-            
-            System.out.println("Schedule complete");
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
+            System.out.println("Schedule complete");            
+        } catch (SQLException | IOException ex) {
             Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-    }   
-           
-    private void sendToFtp(){
-        
-    }
+    }               
     
     private static List<ServerNode> getServers(NodeList list){
         ArrayList<ServerNode> servers = new ArrayList<>();

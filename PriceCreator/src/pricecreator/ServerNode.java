@@ -12,6 +12,7 @@ public final class ServerNode {
         public String Username;
         public String Password;
         public String Port;
+        public String urlPrefix;
         
         public ServerNode(Node node) {
             this.node = node;
@@ -20,7 +21,9 @@ public final class ServerNode {
             this.URL = getURL();
             this.Source = getSource();
             this.Username = getUsername();
-            this.Password = getPassword();            
+            this.Password = getPassword();
+            this.Port = getPort();
+            this.urlPrefix="";
         }
         
         public String getName() {
@@ -65,5 +68,9 @@ public final class ServerNode {
             return nameAttrib.getNodeValue();
         }
         
-        
+        public String getUrlPrefix() {
+            NamedNodeMap attributes = node.getAttributes();
+            Node nameAttrib = attributes.getNamedItem("UrlPrefix");
+            return nameAttrib.getNodeValue();
+        }
 }

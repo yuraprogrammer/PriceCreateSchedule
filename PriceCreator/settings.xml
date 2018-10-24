@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><configuration>
     <Servers>
-        <Server Password="roman" Port="1433" Source="Alexprom_ASUTP" URL="jdbc:sqlserver://176.105.202.29" User="roman" driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" name="ConfigServer"/>
+        <Server Password="roman" Port="1433" Source="Alexprom_ASUTP" URL="176.105.202.29" UrlPrefix="jdbc:sqlserver://" User="roman" driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" name="ConfigServer"/>
     </Servers>
 	<FTP Password="roman" Path="ftp.tabletki.ua" User="roman" name="ftpServer"/>
     <SerialNum name="12345"/>

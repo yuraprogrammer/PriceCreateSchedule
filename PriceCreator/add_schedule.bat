@@ -1,0 +1,1 @@
+schtasks /create /tn PriceCreateScedule /sc minute /tr "%CD%\start.bat" /st 16:58:00 /f

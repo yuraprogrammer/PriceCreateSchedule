@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,6 +25,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.commons.net.PrintCommandListener;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -52,6 +57,8 @@ public class CreatorSettings extends javax.swing.JFrame {
     String ServerPort="";
     String DatabaseUserName="";
     String DatabaseUserPassword="";
+    String serverPath="";
+    String urlPrefix="";
     
     /**
      * Creates new form CreatorSettings
@@ -79,6 +86,7 @@ public class CreatorSettings extends javax.swing.JFrame {
             NodeList serverList = doc.getElementsByTagName("Server");
             servers = getServers(serverList);
             //Get database connection settings
+            this.setServerPath(servers.get(0).getURL());
             this.setDatabaseName(servers.get(0).getSource());
             this.setDriver(servers.get(0).getDriver());
             this.setServerPort(servers.get(0).getPort());
@@ -110,6 +118,7 @@ public class CreatorSettings extends javax.swing.JFrame {
 
     private void fillFields(){
         eDbName.setText(this.getDatabaseName());
+        eServerAddress.setText(this.getServerPath());
         ePortNum.setText(this.getServerPort());
         eLogin.setText(this.getDatabaseUserName());
         ePassword.setText(this.getDatabaseUserPassword());
@@ -140,6 +149,7 @@ public class CreatorSettings extends javax.swing.JFrame {
         eDbName = new javax.swing.JTextField();
         label3 = new java.awt.Label();
         label4 = new java.awt.Label();
+        eServerAddress = new javax.swing.JTextField();
         ePortNum = new javax.swing.JTextField();
         label1 = new java.awt.Label();
         eLogin = new javax.swing.JTextField();
@@ -147,6 +157,7 @@ public class CreatorSettings extends javax.swing.JFrame {
         ePassword = new javax.swing.JPasswordField();
         btnTest = new javax.swing.JButton();
         showDbPassword = new javax.swing.JCheckBox();
+        label9 = new java.awt.Label();
         jPanel2 = new javax.swing.JPanel();
         label6 = new java.awt.Label();
         eFtpAddress = new javax.swing.JTextField();
@@ -155,6 +166,7 @@ public class CreatorSettings extends javax.swing.JFrame {
         label8 = new java.awt.Label();
         eFtpUserPassword = new javax.swing.JPasswordField();
         showFtpPassword = new javax.swing.JCheckBox();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Настройки");
@@ -210,10 +222,21 @@ public class CreatorSettings extends javax.swing.JFrame {
 
         label3.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         label3.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
-        label3.setText("Имя базы данных:");
+        label3.setText("Имя БД:");
 
         label4.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
         label4.setText("Порт:");
+
+        eServerAddress.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                eServerAddressFocusLost(evt);
+            }
+        });
+        eServerAddress.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                eServerAddressKeyPressed(evt);
+            }
+        });
 
         ePortNum.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -268,6 +291,9 @@ public class CreatorSettings extends javax.swing.JFrame {
             }
         });
 
+        label9.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
+        label9.setText("Имя сервера БД:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -275,16 +301,19 @@ public class CreatorSettings extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(eLogin, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(eDbName, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(eDbName, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(label9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(eServerAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(label4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(0, 13, Short.MAX_VALUE))
                             .addComponent(ePortNum)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -292,22 +321,27 @@ public class CreatorSettings extends javax.swing.JFrame {
                             .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(ePassword)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(showDbPassword)))
+                        .addComponent(showDbPassword))
+                    .addComponent(eLogin))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(label4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(1, 1, 1)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(eDbName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ePortNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(label4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(1, 1, 1)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(eDbName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ePortNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(eServerAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(label9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(1, 1, 1)
@@ -374,6 +408,13 @@ public class CreatorSettings extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Тест соединения");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -384,14 +425,15 @@ public class CreatorSettings extends javax.swing.JFrame {
                     .addComponent(eFtpAddress)
                     .addComponent(eFtpUserName)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(eFtpUserPassword)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(showFtpPassword))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(label6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(label7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(label8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(eFtpUserPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(showFtpPassword)))
+                            .addComponent(jButton1))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -411,7 +453,9 @@ public class CreatorSettings extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(eFtpUserPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(showFtpPassword))
-                .addGap(0, 9, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
+                .addGap(0, 11, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -444,12 +488,12 @@ public class CreatorSettings extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(6, 6, 6)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(label5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(eSerialNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -472,7 +516,12 @@ public class CreatorSettings extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
-        dbConn = new JDbConnection(this.getDriver(), this.getDatabaseName()+":"+this.getServerPort(), "localhost", this.getDatabaseUserName(), this.getDatabaseUserPassword());
+        dbConn = new JDbConnection(this.getDriver(), this.getDatabaseName(), servers.get(0).getUrlPrefix()+this.getServerPath()+":"+this.getServerPort(), this.getDatabaseUserName(), this.getDatabaseUserPassword());
+        if (dbConn.isConnected()){
+            JOptionPane.showMessageDialog(this, "Соединение установлено!!!", "Тест соединения с БД...", JOptionPane.OK_OPTION);
+        }else{
+            JOptionPane.showMessageDialog(this, "Соединение не установлено!!! Проверьте настройки.", "Тест соединения с БД...", JOptionPane.OK_OPTION);
+        }
     }//GEN-LAST:event_btnTestActionPerformed
 
     private void btnAcceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcceptActionPerformed
@@ -607,6 +656,42 @@ public class CreatorSettings extends javax.swing.JFrame {
         this.setFtpPassword(edited);
     }//GEN-LAST:event_eFtpUserPasswordFocusLost
 
+    private void eServerAddressKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_eServerAddressKeyPressed
+        if (evt.getKeyCode()==java.awt.event.KeyEvent.VK_ENTER){
+            edited=true;
+            this.setServerAddress(edited);
+            eServerAddress.transferFocus();
+        }
+    }//GEN-LAST:event_eServerAddressKeyPressed
+
+    private void eServerAddressFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eServerAddressFocusLost
+        edited=true;
+        this.setServerAddress(edited);
+    }//GEN-LAST:event_eServerAddressFocusLost
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            FTPClient ftp = null;
+            ftp = new FTPClient();
+            ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
+            int reply;
+            ftp.connect(this.getFtpPath());
+            reply = ftp.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(reply)) {
+                JOptionPane.showMessageDialog(this, "Неверный адрес FTP-сервера!!!", "Тест соединения с FTP...", JOptionPane.OK_OPTION);
+                ftp.disconnect();			
+            }
+            if (ftp.login(this.getFtpUser(), this.getFtpUserPassword())){
+                JOptionPane.showMessageDialog(this, "Соединение с FTP-сервером установлено!!!", "Тест соединения с FTP...", JOptionPane.OK_OPTION);
+            }else{
+                JOptionPane.showMessageDialog(this, "Неверный логин или пароль!!!", "Тест соединения с FTP...", JOptionPane.OK_OPTION);
+            }            
+        } catch (IOException ex) {
+            Logger.getLogger(CreatorSettings.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     private void save(){
         try {
             NodeList serverList = doc.getElementsByTagName("Server");
@@ -616,6 +701,8 @@ public class CreatorSettings extends javax.swing.JFrame {
             serverDriver.setTextContent(this.getDriver());
             Node dbName = serverMap.getNamedItem("Source");
             dbName.setTextContent(this.getDatabaseName());
+            Node dbAddress = serverMap.getNamedItem("URL");
+            dbAddress.setTextContent(this.getServerPath());
             Node dbPort = serverMap.getNamedItem("Port");
             dbPort.setTextContent(this.getServerPort());
             Node dbUserName = serverMap.getNamedItem("User");
@@ -707,6 +794,13 @@ public class CreatorSettings extends javax.swing.JFrame {
         }
     }
 
+    private void setServerAddress(boolean edited){
+        if (edited){
+            this.setServerPath(eServerAddress.getText());
+            btnAccept.setEnabled(true);
+        }
+    }
+    
     public String getDriver() {
         return driver;
     }
@@ -778,6 +872,14 @@ public class CreatorSettings extends javax.swing.JFrame {
     public final void setDatabaseUserPassword(String DatabaseUserPassword) {
         this.DatabaseUserPassword = DatabaseUserPassword;
     }
+
+    public String getServerPath() {
+        return serverPath;
+    }
+
+    public final void setServerPath(String serverPath) {
+        this.serverPath = serverPath;
+    }
     
     
     /**
@@ -828,6 +930,8 @@ public class CreatorSettings extends javax.swing.JFrame {
     private javax.swing.JPasswordField ePassword;
     private javax.swing.JTextField ePortNum;
     private javax.swing.JTextField eSerialNumber;
+    private javax.swing.JTextField eServerAddress;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSeparator jSeparator1;
@@ -839,6 +943,7 @@ public class CreatorSettings extends javax.swing.JFrame {
     private java.awt.Label label6;
     private java.awt.Label label7;
     private java.awt.Label label8;
+    private java.awt.Label label9;
     private javax.swing.JCheckBox showDbPassword;
     private javax.swing.JCheckBox showFtpPassword;
     // End of variables declaration//GEN-END:variables
