@@ -11,6 +11,7 @@ public final class ServerNode {
         public String Source;
         public String Username;
         public String Password;
+        public String Port;
         
         public ServerNode(Node node) {
             this.node = node;
@@ -57,4 +58,12 @@ public final class ServerNode {
             Node nameAttrib = attributes.getNamedItem("Password");
             return nameAttrib.getNodeValue();
         }
+
+        public String getPort() {
+            NamedNodeMap attributes = node.getAttributes();
+            Node nameAttrib = attributes.getNamedItem("Port");
+            return nameAttrib.getNodeValue();
+        }
+        
+        
 }
