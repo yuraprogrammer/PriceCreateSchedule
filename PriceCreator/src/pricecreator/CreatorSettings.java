@@ -20,7 +20,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -102,6 +101,8 @@ public class CreatorSettings extends javax.swing.JFrame {
             this.setFtpUser(ftpUserItem.getNodeValue());
             this.setFtpUserPassword(ftpPasswordItem.getNodeValue());
             fillFields();
+            edited=false;
+            btnAccept.setEnabled(edited);
         } catch (SAXException | IOException ex) {
             Logger.getLogger(CreatorSettings.class.getName()).log(Level.SEVERE, null, ex);
         }                            
@@ -481,7 +482,9 @@ public class CreatorSettings extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAcceptActionPerformed
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        save();
+        if (!edited){
+            save();
+        }
         System.exit(0);
     }//GEN-LAST:event_btnOkActionPerformed
 
@@ -641,10 +644,10 @@ public class CreatorSettings extends javax.swing.JFrame {
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(new File(System.getProperty("user.dir")+File.separator+"settings.xml"));
             transformer.transform(source, result);
-        } catch (TransformerConfigurationException ex) {
-            Logger.getLogger(CreatorSettings.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Сохранение выполнено успешно!!!", "Сохранение...", JOptionPane.OK_OPTION);
+            edited = false;
         } catch (TransformerException ex) {
-            Logger.getLogger(CreatorSettings.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Ошибка!!! "+ex.getLocalizedMessage(), "Сохранение...", JOptionPane.OK_OPTION);                        
         }
     }        
     
