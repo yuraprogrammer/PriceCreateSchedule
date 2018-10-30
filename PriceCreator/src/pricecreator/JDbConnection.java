@@ -24,7 +24,7 @@ public final class JDbConnection {
         this.dbName = dbName;
         user = userName;
         
-        url = this.serverName+";databaseName="+this.dbName;
+        url = this.serverName+"/"+this.dbName;
         this.driver = driver;
         
         try {
