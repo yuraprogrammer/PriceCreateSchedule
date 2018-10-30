@@ -164,11 +164,12 @@ public class Scheduler {
             String SAMPLE_CSV_FILE = "Rest_"+serial+"_"+df.format(date);
             BufferedWriter writer;
             try {
-                writer = Files.newBufferedWriter(Paths.get(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".csv"));
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
+                writer = Files.newBufferedWriter(Paths.get(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".csv"));                
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL
                 //.withHeader(rsmd/*header.toString()*/)
                 .withHeader("Code","Name","Producer","Tax","Price","PriceReserve","PriceReserveOrder","Quantity","Code1","Code2","Code3","Code4","Code6","Code7","Code8","Code9","Code10","Code11")
                 );
+                
                 while (rs.next()){
                     ArrayList values = new ArrayList();
                     for (int i=1; i<rsmd.getColumnCount(); i++){

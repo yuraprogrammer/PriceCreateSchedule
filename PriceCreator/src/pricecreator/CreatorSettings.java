@@ -520,7 +520,7 @@ public class CreatorSettings extends javax.swing.JFrame {
         if (dbConn.isConnected()){
             JOptionPane.showMessageDialog(this, "Соединение установлено!!!", "Тест соединения с БД...", JOptionPane.OK_OPTION);
         }else{
-            JOptionPane.showMessageDialog(this, "Соединение не установлено!!! Проверьте настройки.", "Тест соединения с БД...", JOptionPane.OK_OPTION);
+            JOptionPane.showMessageDialog(this, "Соединение не установлено!!! Проверьте настройки. \r\n"+dbConn.e.getMessage()+"\r\n"+dbConn.getUrl(), "Тест соединения с БД...", JOptionPane.OK_OPTION);
         }
     }//GEN-LAST:event_btnTestActionPerformed
 

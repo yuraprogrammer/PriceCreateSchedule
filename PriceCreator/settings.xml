@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><configuration>
     <Servers>
-        <Server Password="gift" Port="1521" Source="XE" URL="localhost" UrlPrefix="jdbc:oracle:thin:@//" User="gift" driver="oracle.jdbc.OracleDriver" name="ConfigServer"/>
+        <Server Password="gift" Port="1521" Source="XE" URL="localhost" UrlPrefix="jdbc:oracle:thin:@" User="gift" driver="oracle.jdbc.OracleDriver" name="ConfigServer"/>
     </Servers>
 	<FTP Password="password" Path="ftp.tabletki.ua" User="user" name="ftpServer"/>
     <SerialNum name="12345"/>
