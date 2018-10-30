@@ -127,13 +127,13 @@ public class Scheduler {
         Statement stmt;
         try {
             stmt = dbConn.db.createStatement();
-            /*String query = "select \n" +
+            String query = "select \n" +
                             "    g.ID as Code, g.NAME as Name, \n" +
                             "    p.Name as Producer, \n" +
                             "    RTRIM(t.ABBR, '%') as Tax, \n" +
                             "    g.LASTPRICE6 as Price,\n" +
-                            "    g.LASTPRICE1 as PiceReserve,\n" +
-                            "    g.LASTPRICE1 as PriceRreserveOrder,\n" +
+                            "    g.LASTPRICE6 as PiceReserve,\n" +
+                            "    g.LASTPRICE6 as PriceRreserveOrder,\n" +
                             "    g.QTYREST as Quantity,\n" +
                             "    g.MORIONID as Code1,\n" +
                             "    (select NVL(ID, 0) from FIRMS_TMP where OKPO=21642228) as Code2,\n" +
@@ -149,8 +149,8 @@ public class Scheduler {
                             "    INNER JOIN producers p ON g.PRODUCERID=p.ID \n" +
                             "    INNER JOIN taxs t ON g.TAXID=t.ID\n" +
                             "    where g.QTYREST<>0     \n" +
-                            "    order by g.ID ";*/
-            String query="select * from counters_daq where daq_dt = '2018-10-22'";
+                            "    order by g.ID ";
+            //String query="select * from counters_daq where daq_dt = '2018-10-22'";
             ResultSet rs = stmt.executeQuery(query);
             ResultSetMetaData rsmd = rs.getMetaData();
             ArrayList header = new ArrayList();
@@ -166,8 +166,8 @@ public class Scheduler {
             try {
                 writer = Files.newBufferedWriter(Paths.get(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".csv"));
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                .withHeader(rsmd/*header.toString()*/)
-                //.withHeader("Code","Name","Producer","Tax","Price","PriceReserve","PriceReserveOrder","Quantity","Code1","Code2","Code3","Code4","Code6","Code7","Code8","Code9","Code10","Code11");
+                //.withHeader(rsmd/*header.toString()*/)
+                .withHeader("Code","Name","Producer","Tax","Price","PriceReserve","PriceReserveOrder","Quantity","Code1","Code2","Code3","Code4","Code6","Code7","Code8","Code9","Code10","Code11")
                 );
                 while (rs.next()){
                     ArrayList values = new ArrayList();
