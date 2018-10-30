@@ -1,1 +1,1 @@
-java -jar dist\PriceCreator.jar
+java -Duser.region=us -jar dist\PriceCreator.jar

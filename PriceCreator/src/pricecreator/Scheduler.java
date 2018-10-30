@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -164,7 +165,7 @@ public class Scheduler {
             String SAMPLE_CSV_FILE = "Rest_"+serial+"_"+df.format(date);
             BufferedWriter writer;
             try {
-                writer = Files.newBufferedWriter(Paths.get(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".csv"));                
+                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".csv"), "Cp1251"));
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL
                 //.withHeader(rsmd/*header.toString()*/)
                 .withHeader("Code","Name","Producer","Tax","Price","PriceReserve","PriceReserveOrder","Quantity","Code1","Code2","Code3","Code4","Code6","Code7","Code8","Code9","Code10","Code11")
@@ -173,7 +174,14 @@ public class Scheduler {
                 while (rs.next()){
                     ArrayList values = new ArrayList();
                     for (int i=1; i<rsmd.getColumnCount(); i++){
-                        values.add(rs.getString(i));                        
+                        String fieldValue = rs.getString(i);
+                        
+                        if (i==2){
+                            for (int j=0; j<fieldValue.length(); j++){
+                                fieldValue.replace(',', '.');
+                            }
+                        }
+                        values.add(fieldValue);
                     }
                     csvPrinter.printRecord(values);
                 }

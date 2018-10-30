@@ -29,7 +29,7 @@ public final class JDbConnection {
         this.driver = driver;
         
         try {
-            db = getConnection(this.driver, url, user, password);
+            db = getConnection(this.driver, url, user, password);            
             System.out.println(url + " connection successfull!!!");
             setConnected(true);
         } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
