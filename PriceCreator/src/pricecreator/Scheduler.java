@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -73,7 +74,8 @@ public class Scheduler {
             doTask();
         }else{
             System.out.println("Database not connected. System will be terminated.");            
-        }        
+        }
+        //doTask();
     }
     
     private void openSettings(){
@@ -153,11 +155,7 @@ public class Scheduler {
                             "    order by g.ID ";
             //String query="select * from counters_daq where daq_dt = '2018-10-22'";
             ResultSet rs = stmt.executeQuery(query);
-            ResultSetMetaData rsmd = rs.getMetaData();
-            ArrayList header = new ArrayList();
-            for (int i=1; i<rsmd.getColumnCount(); i++){
-                header.add(rsmd.getColumnName(i));
-            }
+            ResultSetMetaData rsmd = rs.getMetaData();           
             Date date = new Date();            
             DateFormat df = new SimpleDateFormat("yyyyMMddhhmmss");
             
@@ -165,27 +163,31 @@ public class Scheduler {
             String SAMPLE_CSV_FILE = "Rest_"+serial+"_"+df.format(date);
             BufferedWriter writer;
             try {
-                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".csv"), "Cp1251"));
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL
-                //.withHeader(rsmd/*header.toString()*/)
-                .withHeader("Code","Name","Producer","Tax","Price","PriceReserve","PriceReserveOrder","Quantity","Code1","Code2","Code3","Code4","Code6","Code7","Code8","Code9","Code10","Code11")
+                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".csv"), "Cp1251"));                
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
+                .withHeader("Code","Name","Producer","Tax","Price","PriceReserve","PriceReserveOrder","Quantity","Code1","Code2","Code3","Code4","Code6","Code7","Code8","Code9","Code10","Code11")                
                 );
                 
                 while (rs.next()){
                     ArrayList values = new ArrayList();
                     for (int i=1; i<rsmd.getColumnCount(); i++){
-                        String fieldValue = rs.getString(i);
-                        
-                        if (i==2){
-                            for (int j=0; j<fieldValue.length(); j++){
-                                fieldValue.replace(',', '.');
-                            }
+                        String fieldValue;
+                        fieldValue = rs.getString(i);
+                        if ((i==2) || (i==3)){                            
+                            String vc = fieldValue.replace(',', '.');                            
+                            values.add(vc);
+                            //csvPrinter.print(vc);
+                        }else{
+                            //csvPrinter.print(fieldValue);
+                            values.add(fieldValue);
                         }
-                        values.add(fieldValue);
-                    }
-                    csvPrinter.printRecord(values);
+                    }                    
+                    
+                    values.add("");
+                    csvPrinter.printRecord(values.toArray());
                 }
-                csvPrinter.flush(); 
+                csvPrinter.flush();
+                
             } catch (IOException ex) {
                 Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -208,7 +210,8 @@ public class Scheduler {
             ftp.connect(ftpAddress);
             reply = ftp.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
-		ftp.disconnect();			
+		System.out.println("No reply from FTP-server. Connection should be terminated.");
+                ftp.disconnect();			
             }
             if (ftp.login(ftpUser, ftpPassword)){
                 ftp.setFileType(FTP.BINARY_FILE_TYPE);
@@ -223,7 +226,9 @@ public class Scheduler {
                 System.out.println("FTP-server has not logged in. File has not transfered.");
             }
             System.out.println("Schedule complete");            
-        } catch (SQLException | IOException ex) {
+        } catch (IOException ex) {
+            Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex.getLocalizedMessage());
+        } catch (SQLException ex) {
             Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
         }
         

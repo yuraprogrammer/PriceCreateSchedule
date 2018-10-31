@@ -681,11 +681,14 @@ public class CreatorSettings extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Неверный адрес FTP-сервера!!!", "Тест соединения с FTP...", JOptionPane.OK_OPTION);
                 ftp.disconnect();			
             }
-            if (ftp.login(this.getFtpUser(), this.getFtpUserPassword())){
+            String login = this.getFtpUser();
+            String password = this.getFtpUserPassword();            
+            if (ftp.login(login, password)){
                 JOptionPane.showMessageDialog(this, "Соединение с FTP-сервером установлено!!!", "Тест соединения с FTP...", JOptionPane.OK_OPTION);
             }else{
                 JOptionPane.showMessageDialog(this, "Неверный логин или пароль!!!", "Тест соединения с FTP...", JOptionPane.OK_OPTION);
-            }            
+            }
+            ftp.disconnect();
         } catch (IOException ex) {
             Logger.getLogger(CreatorSettings.class.getName()).log(Level.SEVERE, null, ex);
             
