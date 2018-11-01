@@ -140,14 +140,14 @@ public class Scheduler {
         Statement stmt;
         try {
             stmt = dbConn.db.createStatement();
-            String query = "select \n" +
-"                                q.ID as Code, q.GOODSNAME_UC as Name, \n" +
+            String query = "select distinct \n" +
+"                                d.ID as Code, q.GOODSNAME_UC as Name, \n" +
 "                                p.Name as Producer, \n" +
 "                                RTRIM(t.ABBR, '%') as Tax, \n" +
 "                                d.PRICE6 as Price,\n" +
 "                                q.QTYREST as Quantity,\n" +
 "                                d.PRICE6 as PriceReserve,\n" +
-"                                d.PRICE6 as PriceRreserveOrder,\n" +                               
+"                                d.PRICE6 as PriceRreserveOrder,                               \n" +
 "                                g.MORIONID as Code1,\n" +
 "                                (select NVL(ID, 0) from FIRMS where OKPO=21642228) as Code2,\n" +
 "                                (select NVL(ID, 0) from FIRMS where OKPO=21643699) as Code3,\n" +
@@ -159,12 +159,10 @@ public class Scheduler {
 "                                (select NVL(ID, 0) from FIRMS where OKPO=13808034) as Code10,\n" +
 "                                (select NVL(ID, 0) from FIRMS where OKPO=35431349) as Code11\n" +
 "                             from QUANTITY q                                 \n" +
-"                                INNER JOIN DOCCONTENTS d ON d.DOCID=q.DOCID AND d.GOODSID=q.GOODSID\n" +
+"                                INNER JOIN DOCCONTENTS d ON d.DOCID=q.DOCID AND d.GOODSID=q.GOODSID AND q.QTYREST=d.QTYREST\n" +
 "                                INNER JOIN GOODS g ON q.GOODSID=g.ID\n" +
-"                                INNER JOIN producers p ON p.ID=g.PRODUCERID\n" +
-"                                INNER JOIN taxs t ON g.TAXID=t.ID                                                              \n" +
-"                             where q.QTYREST>0 \n" +
-"                                \n" +
+"                                INNER JOIN producers p ON p.ID=g.PRODUCERID                                \n" +
+"                                INNER JOIN taxs t ON g.TAXID=t.ID                                                             \n" +
 "                                order by q.GOODSNAME_UC ";
             //String query="select * from counters_daq where daq_dt = '2018-10-22'";
             ResultSet rs = stmt.executeQuery(query);
@@ -178,7 +176,7 @@ public class Scheduler {
             try {
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".csv"), "Cp1251"));                
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                .withHeader("Code","Name","Producer","Tax","Price","PriceReserve","PriceReserveOrder","Quantity","Code1","Code2","Code3","Code4","Code6","Code7","Code8","Code9","Code10","Code11")                
+                .withHeader("Code","Name","Producer","Tax","Price","Quantity","PriceReserve","PriceReserveOrder","Code1","Code2","Code3","Code4","Code6","Code7","Code8","Code9","Code10","Code11")                
                 );
                 
                 while (rs.next()){
