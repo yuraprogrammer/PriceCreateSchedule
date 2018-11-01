@@ -1,0 +1,25 @@
+ноя 01, 2018 10:34:12 AM pricecreator.Scheduler openSettings
+INFO: Settings opened and accepted!!!
+ноя 01, 2018 10:34:13 AM pricecreator.Scheduler <init>
+INFO: Database connected successfull
+ноя 01, 2018 10:34:13 AM pricecreator.Scheduler doTask
+SEVERE: null
+java.sql.SQLSyntaxErrorException: ORA-00942: table or view does not exist
+
+	at oracle.jdbc.driver.T4CTTIoer.processError(T4CTTIoer.java:450)
+	at oracle.jdbc.driver.T4CTTIoer.processError(T4CTTIoer.java:399)
+	at oracle.jdbc.driver.T4C8Oall.processError(T4C8Oall.java:1017)
+	at oracle.jdbc.driver.T4CTTIfun.receive(T4CTTIfun.java:655)
+	at oracle.jdbc.driver.T4CTTIfun.doRPC(T4CTTIfun.java:249)
+	at oracle.jdbc.driver.T4C8Oall.doOALL(T4C8Oall.java:566)
+	at oracle.jdbc.driver.T4CStatement.doOall8(T4CStatement.java:202)
+	at oracle.jdbc.driver.T4CStatement.doOall8(T4CStatement.java:45)
+	at oracle.jdbc.driver.T4CStatement.executeForDescribe(T4CStatement.java:766)
+	at oracle.jdbc.driver.OracleStatement.executeMaybeDescribe(OracleStatement.java:897)
+	at oracle.jdbc.driver.OracleStatement.doExecuteWithTimeout(OracleStatement.java:1034)
+	at oracle.jdbc.driver.OracleStatement.executeQuery(OracleStatement.java:1244)
+	at oracle.jdbc.driver.OracleStatementWrapper.executeQuery(OracleStatementWrapper.java:420)
+	at pricecreator.Scheduler.doTask(Scheduler.java:167)
+	at pricecreator.Scheduler.<init>(Scheduler.java:84)
+	at pricecreator.PriceCreator.main(PriceCreator.java:20)
+

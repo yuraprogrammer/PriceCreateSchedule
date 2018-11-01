@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -22,11 +20,12 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,15 +64,26 @@ public class Scheduler {
     String ftpAddress="";
     String ftpUser="";
     String ftpPassword="";
+    static final Logger logger = Logger.getLogger(Scheduler.class.getName());
+    FileHandler fh;   
     
+
     public Scheduler(){
+        try {   
+            fh = new FileHandler(System.getProperty("user.dir")+File.separator+"errors.log");
+            SimpleFormatter formatter = new SimpleFormatter();  
+            fh.setFormatter(formatter); 
+        } catch (IOException | SecurityException ex) {
+            logger.log(Level.SEVERE, null, ex);
+        }
+        logger.addHandler(fh);
         openSettings();
         doConnect();
         if (dbConn.isConnected()){
-            System.out.println("Database connected successfull");
+            logger.log(Level.INFO, "Database connected successfull");
             doTask();
         }else{
-            System.out.println("Database not connected. System will be terminated.");            
+            logger.log(Level.SEVERE, "Database not connected. System will be terminated. "+dbConn.e.getMessage());            
         }
         //doTask();
     }
@@ -84,7 +94,7 @@ public class Scheduler {
         try {
             db = dbf.newDocumentBuilder();
         } catch (ParserConfigurationException err) {
-            System.out.println("Unable create document!!!");
+            logger.log(Level.SEVERE, "Unable create document!!!");
         }
         
         xmlFile = new File(System.getProperty("user.dir")+File.separator+"settings.xml");
@@ -113,9 +123,9 @@ public class Scheduler {
             ftpAddress = ftpPathItem.getNodeValue();
             ftpUser = ftpUserItem.getNodeValue();
             ftpPassword = ftpPasswordItem.getNodeValue();
-            System.out.println("Settings opened and accepted!!!");
+            logger.log(Level.INFO, "Settings opened and accepted!!!");
         } catch (SAXException | IOException ex) {
-            Logger.getLogger(CreatorSettings.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
         
         
@@ -131,28 +141,31 @@ public class Scheduler {
         try {
             stmt = dbConn.db.createStatement();
             String query = "select \n" +
-                            "    g.ID as Code, g.NAME as Name, \n" +
-                            "    p.Name as Producer, \n" +
-                            "    RTRIM(t.ABBR, '%') as Tax, \n" +
-                            "    g.LASTPRICE6 as Price,\n" +
-                            "    g.LASTPRICE6 as PiceReserve,\n" +
-                            "    g.LASTPRICE6 as PriceRreserveOrder,\n" +
-                            "    g.QTYREST as Quantity,\n" +
-                            "    g.MORIONID as Code1,\n" +
-                            "    (select NVL(ID, 0) from FIRMS_TMP where OKPO=21642228) as Code2,\n" +
-                            "    (select NVL(ID, 0) from FIRMS_TMP where OKPO=21643699) as Code3,\n" +
-                            "    (select NVL(ID, 0) from FIRMS_TMP where OKPO=22946976) as Code4,\n" +
-                            "    (select NVL(ID, 0) from FIRMS_TMP where OKPO=25184975) as Code6,\n" +
-                            "    (select NVL(ID, 0) from FIRMS_TMP where OKPO=31816235) as Code7,\n" +
-                            "    (select NVL(ID, 0) from FIRMS_TMP where OKPO=21194014) as Code8,\n" +
-                            "    (select NVL(ID, 0) from FIRMS_TMP where OKPO=21947206) as Code9,\n" +
-                            "    (select NVL(ID, 0) from FIRMS_TMP where OKPO=13808034) as Code10,\n" +
-                            "    (select NVL(ID, 0) from FIRMS_TMP where OKPO=35431349) as Code11\n" +
-                            " from goods g \n" +
-                            "    INNER JOIN producers p ON g.PRODUCERID=p.ID \n" +
-                            "    INNER JOIN taxs t ON g.TAXID=t.ID\n" +
-                            "    where g.QTYREST<>0     \n" +
-                            "    order by g.ID ";
+"                                q.ID as Code, q.GOODSNAME_UC as Name, \n" +
+"                                p.Name as Producer, \n" +
+"                                RTRIM(t.ABBR, '%') as Tax, \n" +
+"                                d.PRICE6 as Price,\n" +
+"                                q.QTYREST as Quantity,\n" +
+"                                d.PRICE6 as PriceReserve,\n" +
+"                                d.PRICE6 as PriceRreserveOrder,\n" +                               
+"                                g.MORIONID as Code1,\n" +
+"                                (select NVL(ID, 0) from FIRMS where OKPO=21642228) as Code2,\n" +
+"                                (select NVL(ID, 0) from FIRMS where OKPO=21643699) as Code3,\n" +
+"                                (select NVL(ID, 0) from FIRMS where OKPO=22946976) as Code4,\n" +
+"                                (select NVL(ID, 0) from FIRMS where OKPO=25184975) as Code6,\n" +
+"                                (select NVL(ID, 0) from FIRMS where OKPO=31816235) as Code7,\n" +
+"                                (select NVL(ID, 0) from FIRMS where OKPO=21194014) as Code8,\n" +
+"                                (select NVL(ID, 0) from FIRMS where OKPO=21947206) as Code9,\n" +
+"                                (select NVL(ID, 0) from FIRMS where OKPO=13808034) as Code10,\n" +
+"                                (select NVL(ID, 0) from FIRMS where OKPO=35431349) as Code11\n" +
+"                             from QUANTITY q                                 \n" +
+"                                INNER JOIN DOCCONTENTS d ON d.DOCID=q.DOCID AND d.GOODSID=q.GOODSID\n" +
+"                                INNER JOIN GOODS g ON q.GOODSID=g.ID\n" +
+"                                INNER JOIN producers p ON p.ID=g.PRODUCERID\n" +
+"                                INNER JOIN taxs t ON g.TAXID=t.ID                                                              \n" +
+"                             where q.QTYREST>0 \n" +
+"                                \n" +
+"                                order by q.GOODSNAME_UC ";
             //String query="select * from counters_daq where daq_dt = '2018-10-22'";
             ResultSet rs = stmt.executeQuery(query);
             ResultSetMetaData rsmd = rs.getMetaData();           
@@ -189,7 +202,7 @@ public class Scheduler {
                 csvPrinter.flush();
                 
             } catch (IOException ex) {
-                Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, null, ex);
             }
             try(ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".zip"));
                 FileInputStream fis= new FileInputStream(Rest_DIR+File.separator+SAMPLE_CSV_FILE+".csv");)
@@ -201,7 +214,7 @@ public class Scheduler {
                     zout.write(buffer);
                     zout.closeEntry();
                 }catch(Exception ex){            
-                    System.out.println(ex.getMessage());
+                    logger.log(Level.SEVERE, ex.getMessage());
                 }            
             FTPClient ftp = null;
             ftp = new FTPClient();
@@ -210,7 +223,7 @@ public class Scheduler {
             ftp.connect(ftpAddress);
             reply = ftp.getReplyCode();
             if (!FTPReply.isPositiveCompletion(reply)) {
-		System.out.println("No reply from FTP-server. Connection should be terminated.");
+		logger.log(Level.SEVERE, "No reply from FTP-server. Connection should be terminated.");
                 ftp.disconnect();			
             }
             if (ftp.login(ftpUser, ftpPassword)){
@@ -223,13 +236,13 @@ public class Scheduler {
                     ftp.disconnect();		
                 }
             }else{
-                System.out.println("FTP-server has not logged in. File has not transfered.");
+                logger.log(Level.SEVERE, "FTP-server has not logged in. File has not transfered.");
             }
-            System.out.println("Schedule complete");            
+            logger.log(Level.INFO, "Schedule complete");            
         } catch (IOException ex) {
-            Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex.getLocalizedMessage());
+            logger.log(Level.SEVERE, null, ex.getLocalizedMessage());
         } catch (SQLException ex) {
-            Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
         
     }               
