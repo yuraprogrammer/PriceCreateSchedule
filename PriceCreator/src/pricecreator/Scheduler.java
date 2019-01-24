@@ -64,6 +64,9 @@ public class Scheduler {
     String ftpAddress="";
     String ftpUser="";
     String ftpPassword="";
+    String discount="";
+    float discountValue = 0;
+    
     static final Logger logger = Logger.getLogger(Scheduler.class.getName());
     FileHandler fh;   
     
@@ -123,6 +126,12 @@ public class Scheduler {
             ftpAddress = ftpPathItem.getNodeValue();
             ftpUser = ftpUserItem.getNodeValue();
             ftpPassword = ftpPasswordItem.getNodeValue();
+            NodeList discountList = doc.getElementsByTagName("Discount");
+            Node discountNode = discountList.item(0);
+            NamedNodeMap discountMap = discountNode.getAttributes();
+            Node discountItem = discountMap.getNamedItem("name");
+            discount = discountItem.getNodeValue();
+            
             logger.log(Level.INFO, "Settings opened and accepted!!!");
         } catch (SAXException | IOException ex) {
             logger.log(Level.SEVERE, null, ex);
@@ -144,10 +153,10 @@ public class Scheduler {
 "                                d.ID as Code, q.GOODSNAME_UC as Name, \n" +
 "                                p.Name as Producer, \n" +
 "                                RTRIM(t.ABBR, '%') as Tax, \n" +
-"                                d.PRICE6 as Price,\n" +
+"                                d.PRICE6 * "+String.valueOf((100-discountValue)/100)+ "as Price,\n" +
 "                                q.QTYREST as Quantity,\n" +
-"                                d.PRICE6 as PriceReserve,\n" +
-"                                d.PRICE6 as PriceRreserveOrder,                               \n" +
+"                                d.PRICE6 * "+String.valueOf((100-discountValue)/100)+ " as PriceReserve,\n" +
+"                                d.PRICE6 * "+String.valueOf((100-discountValue)/100)+ " as PriceRreserveOrder, \n" +
 "                                g.MORIONID as Code1,\n" +
 "                                (select NVL(ID, 0) from FIRMS where OKPO=21642228) as Code2,\n" +
 "                                (select NVL(ID, 0) from FIRMS where OKPO=21643699) as Code3,\n" +

@@ -4,4 +4,5 @@
     </Servers>
 	<FTP Password="dk29cj5a" Path="asutm.com" User="Tehnika-Guest" name="ftpServer"/>
     <SerialNum name="12345"/>
+	<Discount name="10"/>
 </configuration>

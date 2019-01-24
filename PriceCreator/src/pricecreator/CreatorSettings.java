@@ -7,6 +7,7 @@ package pricecreator;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -59,6 +60,15 @@ public class CreatorSettings extends javax.swing.JFrame {
     String DatabaseUserPassword="";
     String serverPath="";
     String urlPrefix="";
+    String discount="";    
+    
+    public String getDiscount() {
+        return discount;
+    }
+
+    private void setDiscount(String discount) {
+            this.discount = discount;            
+    }
     
     /**
      * Creates new form CreatorSettings
@@ -108,6 +118,12 @@ public class CreatorSettings extends javax.swing.JFrame {
             this.setFtpPath(ftpPathItem.getNodeValue());
             this.setFtpUser(ftpUserItem.getNodeValue());
             this.setFtpUserPassword(ftpPasswordItem.getNodeValue());
+            NodeList discountList = doc.getElementsByTagName("Discount");
+            Node discountNode = discountList.item(0);
+            NamedNodeMap discountMap = discountNode.getAttributes();
+            Node discountItem = discountMap.getNamedItem("name");
+            this.setDiscount(discountItem.getNodeValue());
+            
             fillFields();
             edited=false;
             btnAccept.setEnabled(edited);
@@ -128,6 +144,7 @@ public class CreatorSettings extends javax.swing.JFrame {
         eFtpUserPassword.setText(this.getFtpUserPassword());
         
         eSerialNumber.setText(this.getSerial());
+        eDiscount.setText(this.getDiscount());
     }
     
     /**
@@ -167,6 +184,8 @@ public class CreatorSettings extends javax.swing.JFrame {
         eFtpUserPassword = new javax.swing.JPasswordField();
         showFtpPassword = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
+        label10 = new java.awt.Label();
+        eDiscount = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Настройки");
@@ -455,32 +474,53 @@ public class CreatorSettings extends javax.swing.JFrame {
                     .addComponent(showFtpPassword))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
-                .addGap(0, 11, Short.MAX_VALUE))
+                .addGap(0, 8, Short.MAX_VALUE))
         );
+
+        label10.setText("Размер скидки, %:");
+
+        eDiscount.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                eDiscountFocusLost(evt);
+            }
+        });
+        eDiscount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                eDiscountKeyPressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(eSerialNumber)
-                    .addComponent(jSeparator1)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(label5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(176, 176, 176)
+                                .addComponent(btnOk)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnAccept)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCancel))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(label10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(eSerialNumber)
+                            .addComponent(jSeparator1)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(label5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(eDiscount))))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(176, 176, 176)
-                .addComponent(btnOk)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnAccept)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnCancel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -488,12 +528,16 @@ public class CreatorSettings extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(label5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(1, 1, 1)
                 .addComponent(eSerialNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(label10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(eDiscount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -531,7 +575,7 @@ public class CreatorSettings extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAcceptActionPerformed
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        if (!edited){
+        if (edited){
             save();
         }
         System.exit(0);
@@ -695,6 +739,30 @@ public class CreatorSettings extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void eDiscountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_eDiscountKeyPressed
+        if (evt.getKeyCode()==KeyEvent.VK_ENTER){
+            try{
+                float discountValue = Float.parseFloat(discount);
+                edited=true;
+                setDiscountValue(edited);
+                eDiscount.transferFocus();            
+            }catch(java.lang.NumberFormatException ex){
+                JOptionPane.showMessageDialog(this, "Неверный формат числа скидки!!!", "Ошибка ввода!!!", JOptionPane.ERROR_MESSAGE);
+            }
+            
+        }
+    }//GEN-LAST:event_eDiscountKeyPressed
+
+    private void eDiscountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eDiscountFocusLost
+        try{
+                float discountValue = Float.parseFloat(discount);
+                edited=true;
+                setDiscountValue(edited);                
+            }catch(java.lang.NumberFormatException ex){
+                JOptionPane.showMessageDialog(this, "Неверный формат числа скидки!!!", "Ошибка ввода!!!", JOptionPane.ERROR_MESSAGE);
+            }
+    }//GEN-LAST:event_eDiscountFocusLost
+
     private void save(){
         try {
             NodeList serverList = doc.getElementsByTagName("Server");
@@ -729,6 +797,12 @@ public class CreatorSettings extends javax.swing.JFrame {
             Node serialItem = serialMap.getNamedItem("name");
             serialItem.setTextContent(this.getSerial());
             
+            NodeList discountList = doc.getElementsByTagName("Discount");
+            Node discountNode = discountList.item(0);
+            NamedNodeMap discountMap = discountNode.getAttributes();
+            Node discountItem = discountMap.getNamedItem("name");
+            discountItem.setTextContent(this.getDiscount());
+            
             Transformer transformer = TransformerFactory.newInstance()
                     .newTransformer();
             DOMSource source = new DOMSource(doc);
@@ -740,6 +814,15 @@ public class CreatorSettings extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Ошибка!!! "+ex.getLocalizedMessage(), "Сохранение...", JOptionPane.OK_OPTION);                        
         }
     }        
+    
+    private void setDiscountValue(boolean edited){
+        if (edited){
+            if (!eDiscount.getText().isEmpty()){
+                setDiscount(eDiscount.getText().replace(",", "."));                
+            }
+            btnAccept.setEnabled(true);
+        }
+    }
     
     private void setDbName(boolean edited){
         if (edited){
@@ -926,6 +1009,7 @@ public class CreatorSettings extends javax.swing.JFrame {
     private javax.swing.JButton btnOk;
     private javax.swing.JButton btnTest;
     private javax.swing.JTextField eDbName;
+    private javax.swing.JFormattedTextField eDiscount;
     private javax.swing.JTextField eFtpAddress;
     private javax.swing.JTextField eFtpUserName;
     private javax.swing.JPasswordField eFtpUserPassword;
@@ -939,6 +1023,7 @@ public class CreatorSettings extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSeparator jSeparator1;
     private java.awt.Label label1;
+    private java.awt.Label label10;
     private java.awt.Label label2;
     private java.awt.Label label3;
     private java.awt.Label label4;
